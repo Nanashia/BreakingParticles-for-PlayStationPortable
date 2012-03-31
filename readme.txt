@@ -7,11 +7,11 @@
 パーティクル崩し（以下”原作”）
 http://wonderfl.net/code/d0dcc2f2d0f8012e42785ef71dab7da2abd5453d/
 
-のPSP移植版です。
+のPSP移植です。
 
-インスコ：
+起動：
 
-0. 希望があればmake。（一応ビルド済みです。）
+0. make。（一応ビルド済みです。）
 
 1. ./particleを各位GAMEフォルダへ放り込む。
 
@@ -34,6 +34,12 @@ SELECT - デバッグ情報の表示切り替え。
 
 DXライブラリPortable
 DX Library Portable Copyright (C) 2008-2010 Kawai Yuichi.
+
+exception.prx
+by crazyc, SamuraiX and sakya
+From http://forums.ps2dev.org/viewtopic.php?t=9591
+     http://forums.ps2dev.org/viewtopic.php?t=9564
+(Unknown license...?)
 
 liblzr
 Uses liblzr by BenHur
