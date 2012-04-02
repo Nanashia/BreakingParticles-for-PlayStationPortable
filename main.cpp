@@ -10,6 +10,8 @@
 #include <fastmath.h>
 #include <time.h>
 
+#include <pspmath.h>
+
 PSP_MODULE_INFO("Particle", 0, 1, 1)
 ;
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
@@ -461,8 +463,8 @@ private:
 		{
 			float bvx = particle.m_vx;
 			float bvy = particle.m_vy;
-			float bspeed = sqrt(bvx * bvx + bvy * bvy);
-			float bradius = atan2(bvy, bvx);
+			float bspeed = vfpu_powf(0.5f, bvx * bvx + bvy * bvy);
+			float bradius = vfpu_atan2f(bvy, bvx);
 
 			for (int i = 0; i < bspeed; i++)
 			{
@@ -484,7 +486,7 @@ private:
 
 						// すこし弄らせてもらいましたサーセンｗ
 						hitParticle->m_vx = //
-							cos(bradius + M_PI * 2 / //
+							vfpu_cosf(bradius + M_PI * 2 / //
 								(3 * GetRandSafe()) - 15) * //
 								((hitParticle->m_vx < 0) ? -3 : 3);
 						hitParticle->m_vy = 1;

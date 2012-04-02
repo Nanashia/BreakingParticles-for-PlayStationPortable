@@ -11,7 +11,7 @@ LDFLAGS =
 
 BUILD_PRX = 1
 
-LIBS = lib/dxlibp.a -lpspgu -lz -lm -lpsprtc -lpspaudio -lpspaudiocodec -lstdc++ -lpsputility -lpspvalloc -lpsppower
+LIBS = lib/dxlibp.a -lpspmath -lpspvfpu -lpspgu -lz -lm -lpsprtc -lpspaudio -lpspaudiocodec -lstdc++ -lpsputility -lpspvalloc -lpsppower
 
 EXTRA_TARGETS = ./$(TARGET)/EBOOT.PBP
 PSP_EBOOT = $(EXTRA_TARGETS)
