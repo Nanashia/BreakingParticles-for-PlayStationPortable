@@ -464,12 +464,14 @@ private:
 			float bvx = particle.m_vx;
 			float bvy = particle.m_vy;
 			float bspeed = vfpu_powf(0.5f, bvx * bvx + bvy * bvy);
-			float bradius = vfpu_atan2f(bvy, bvx);
+			
+			DrawPixel(particle.m_x, particle.m_y, particle.m_color);
 
 			for (int i = 0; i < bspeed; i++)
 			{
-				particle.m_x += particle.m_vx / bspeed;
-				particle.m_y += particle.m_vy / bspeed;
+				float r_bspeed = 1 / bspeed;
+				particle.m_x += particle.m_vx * r_bspeed;
+				particle.m_y += particle.m_vy * r_bspeed;
 
 				Particle* hitParticle = //
 					m_breaker.m_blocks.GetParticle( //
@@ -480,11 +482,11 @@ private:
 				if (hitParticle)
 					if (hitParticle->m_state == hitParticle->BLOCK)
 					{
+						float bradius = vfpu_atan2f(bvy, bvx);
 					//	printfDx("hit:%p (%f,%f)\n", hitParticle, particle.m_x, particle.m_y);
 
 						BreakParticle(*hitParticle);
 
-						// すこし弄らせてもらいましたサーセンｗ
 						hitParticle->m_vx = //
 							vfpu_cosf(bradius + M_PI * 2 / //
 								(3 * GetRandSafe()) - 15) * //
@@ -514,7 +516,7 @@ private:
 				{
 					particle.m_vy = -fabsf(particle.m_vy);
 				}
-				DrawPixel(particle.m_x, particle.m_y, particle.m_color);
+			//	DrawPixel(particle.m_x, particle.m_y, particle.m_color);
 			}
 		}
 
@@ -673,53 +675,69 @@ int main(void)
 
 	Screen screen(480, 272);
 
-	Bar bar(screen.GetWidth() / 4, 10, DXP_COLOR_GREEN, screen.GetWidth() / 80);
-	Blocks block(20);
-	BlockBreaker breaker(bar, block);
-	Fps fps;
+	bool replay;
 
-	bool paused = false,
-		locked_start = false,
-		showed_debug = false,
-		locked_select = false;
-
-	while(ProcessMessage() == 0)
+	do
 	{
-		if (!breaker.IsCleared())
+		replay = false;
 		{
-			CheckKey(paused, locked_start, DXP_INPUT_START);
-			if (paused)
-				continue;
+			Bar bar(screen.GetWidth() / 4, 10, DXP_COLOR_GREEN, screen.GetWidth() / 80);
+			Blocks block(20);
+			BlockBreaker breaker(bar, block);
+			Fps fps;
 
-			// 画面の初期化
-			clsDx();
-			ClearDrawScreen();
+			bool paused = false,
+				locked_start = false,
+				showed_debug = false,
+				locked_select = false;
 
-			// デバッグの出力
-			if (CheckKey(showed_debug, locked_select, DXP_INPUT_SELECT))
+			while(ProcessMessage() == 0)
 			{
-				printfDx("\nBLOCK=%d\nFALL=%d\nBALL=%d\nFPS=%d\n", //
-					breaker.GetCounter().GetBlockCount(), //
-					breaker.GetCounter().GetFallCount(), //
-					breaker.GetCounter().GetBallCount(), //
-					fps.GetFps());
+				if (!breaker.IsCleared())
+				{
+					CheckKey(paused, locked_start, DXP_INPUT_START);
+					if (paused)
+						continue;
+
+					// 画面の初期化
+					clsDx();
+					ClearDrawScreen();
+
+					// デバッグの出力
+					if (CheckKey(showed_debug, locked_select, DXP_INPUT_SELECT))
+					{
+						printfDx("\nBLOCK=%d\nFALL=%d\nBALL=%d\nFPS=%d\n", //
+							breaker.GetCounter().GetBlockCount(), //
+							breaker.GetCounter().GetFallCount(), //
+							breaker.GetCounter().GetBallCount(), //
+							fps.GetFps());
+					}
+
+					// 更新
+					breaker.Update();
+
+					// 更新
+					ScreenFlip();
+					fps.Update();
+				}else
+				{
+					bool start = false;
+					if(CheckKey(start, locked_start, DXP_INPUT_START))
+					{
+						replay = true;
+						break;
+					}
+					
+					//breaker.Redraw();
+					//ScreenCopy();
+
+					// 0.1秒
+					Sleep(100);
+					
+				}
 			}
-
-			// 更新
-			breaker.Update();
-
-			// 更新
-			ScreenFlip();
-			fps.Update();
-		}else
-		{
-			//breaker.Redraw();
-			//ScreenCopy();
-
-			// 0.5秒
-			Sleep(500);
 		}
-	}
+	} while(replay == true);
 	DxLib_End();
 	exit(0);
 	return 0;
